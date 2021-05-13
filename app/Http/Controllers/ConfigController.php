@@ -8,8 +8,10 @@ use DB;
 class ConfigController extends Controller
 {
     public function getConfig($key = ''){
-        $rs = DB::table('configs')->where('keyconf', $key )->first();
-        return $rs;
+        if (DB::connection('sqlsrv')){
+            $rs = DB::table('configs')->where('keyconf', $key )->first();
+            return $rs;
+        }
     }
 
 }
