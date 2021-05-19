@@ -4,10 +4,7 @@
 
 
 @section('content')
-
-    <h3><i class="feather icon-codepen"></i> EMPRESAS </h3>
-
-    <form action="{{ route('empresas.update' , $modules->ID_EMP) }}" method="post" enctype="multipart/form-data">
+    <form action="{{ route('empresas.update' , $modules->id) }}" method="post" enctype="multipart/form-data">
         @csrf
         @method('PATCH')
         @include('empresas.form')

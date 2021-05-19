@@ -1,7 +1,8 @@
 <!DOCTYPE html>
     <html lang="en">
     <head>
-        <title>{{$nameApp->value }} @yield('title')</title>
+
+        <title>@yield('title') - {{$nameApp->value }} - </title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -17,7 +18,8 @@
         <link rel="stylesheet" href="{{ asset('assets/plugins/animation/css/animate.min.css') }}">
         <!-- jconfirm css -->
         <link rel="stylesheet" href="{{ asset('assets/plugins/jconfirm/css/jquery-confirm.css') }}">
-
+        <!-- select 2 !-->
+        <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.css') }}" />
         <!-- vendor css -->
         <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
         <!-- custom -->
@@ -57,6 +59,7 @@
         <script src="{{ asset('assets/js/vendor-all.min.js') }}"></script>
         <script src="{{ asset('assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
         <script src="{{ asset('assets/plugins/jconfirm/js/jquery-confirm.js') }}"></script>
+        <script src="{{ asset('assets/plugins/select2/js/select2.js') }}"></script>
         <script src="{{ asset('assets/js/pcoded.min.js') }}"></script>
         <script src="{{ asset('js/function.js') }}"></script>
         <script src="{{ asset('js/site.js') }}"></script>

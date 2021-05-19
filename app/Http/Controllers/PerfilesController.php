@@ -9,6 +9,7 @@ use App\Models\profpermission;
 use App\Http\Controllers\UserController;
 use Carbon\Carbon;
 use DB;
+use Tools;
 
 class PerfilesController extends Controller
 {
@@ -17,6 +18,11 @@ class PerfilesController extends Controller
     var $idApp    = 2;
     var $infoApp  = '';
     var $permisos = '';
+
+    function run(){
+        $this->getOptionMenu();
+        $this->getAccessApp();
+    }
 
     function getAccessApp($mode = 'all'){
         $user     = new LoginAdmin();
@@ -30,23 +36,17 @@ class PerfilesController extends Controller
 
     public function index()
     {
-        if (!$this->getAccessApp() || $this->permisos[0]->aview == 0) return redirect()->route('errorAccess');
-        $this->getOptionMenu();
-        $datos = profile::paginate(30);
+        $this->run();
+        $datos = profile::paginate(Tools::paginacion());
         return view($this->slug.'.index', ['modules'=> $datos , 'infoApp' =>  $this->infoApp[0] , 'permisos'=> $this->permisos[0] ]  );
-    }
-
-    public function getPerfilName($id){
-        $PerfilName = profile::find($id);
-        return $PerfilName->profname;
     }
 
     public function create()
     {
-        if (!$this->getAccessApp() || $this->permisos[0]->anew == 0) return redirect()->route('errorAccess');
-        $this->getOptionMenu();
+        $this->run();
         $modulo   = modulesapp::all();
-        return view($this->slug.'.create', ['infoApp' =>  $this->infoApp[0] , 'permisos'=> $this->permisos[0], 'modolosapp'=> $modulo ] );
+        $modules  = new profile;
+        return view($this->slug.'.create', ['modules'=>$modules,'infoApp' =>  $this->infoApp[0] , 'permisos'=> $this->permisos[0], 'modolosapp'=> $modulo ] );
     }
 
     public function exist($perfil , $id =''){
@@ -61,8 +61,12 @@ class PerfilesController extends Controller
 
     public function store(Request $request)
     {
-            if (!$this->getAccessApp() || $this->permisos[0]->anew == 0) return redirect()->route('errorAccess');
+
             $datos  = $request->except('_token');
+
+            $request->validate([
+                'profname'=>['required','min:5','unique:profiles']
+            ]);
 
             $id     = profile::insertGetId( ['profname'=>$datos['profname'] , "created_at"=>Carbon::now()] );
 
@@ -105,8 +109,7 @@ class PerfilesController extends Controller
 
     public function edit($id)
     {
-        if (!$this->getAccessApp() || $this->permisos[0]->aedit == 0 ) return redirect()->route('errorAccess');
-        $this->getOptionMenu();
+        $this->run();
         $datos         = profile::find($id);
         $List_permisos = array();
 
@@ -138,11 +141,15 @@ class PerfilesController extends Controller
 
     public function update(Request $request, $id)
     {
-        if (!$this->getAccessApp() || $this->permisos[0]->aedit == 0 ) return redirect()->route('errorAccess');
+
         $datos = $request->except('_token','_method');
 
-        profile::where('id','=',$id)->update(['profname'=>$datos['profname'] , "updated_at"=>Carbon::now()]);
+        $request->validate([
+            'profname'=>['required','min:5','unique:profiles,profname,'.$id]
+        ]);
 
+
+        profile::where('id','=',$id)->update(['profname'=>$datos['profname'] , "updated_at"=>Carbon::now()]);
         $modulos = DB::table('modulesapps')->get();
 
             if ($modulos){
@@ -159,14 +166,12 @@ class PerfilesController extends Controller
             }
 
         UserController::log("Actualizo el perfil {$datos['profname']} ",'update');
-
         return redirect($this->slug.'/');
     }
 
     public function destroy($id)
     {
-        if (!$this->getAccessApp() || $this->permisos[0]->adelete == 0 ) return redirect()->route('errorAccess');
-        UserController::log("Elimino el perfil ".$this->getPerfilName($id)." con ID => {$id}",'delete');
+        UserController::log("Elimino el perfil ".Tools::getInfoTableByIdField('profile',$id, 'nameapp')." con ID => {$id}",'delete');
         profile::destroy($id);
         return redirect($this->slug.'/');
     }

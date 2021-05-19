@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\UserController;
 use App\Models\User;
+use App\Models\enterprise_rel;
 use Carbon\Carbon;
+use Illuminate\Pagination\Paginator;
 use Db;
 use Auth;
+use Tools;
+
 
 class UsuariosController extends Controller
 {
@@ -16,6 +20,12 @@ class UsuariosController extends Controller
     var $idApp    = 3;
     var $infoApp  = '';
     var $permisos = '';
+
+
+    function run(){
+        $this->getOptionMenu();
+        $this->getAccessApp();
+    }
 
     function getAccessApp($mode = 'all'){
         $user     = new LoginAdmin();
@@ -45,41 +55,36 @@ class UsuariosController extends Controller
 
     public function index()
     {
-        if (!$this->getAccessApp() || $this->permisos[0]->aview == 0) return redirect()->route('errorAccess');
-        $this->getOptionMenu();
-
-        $empresaid = Auth::user()->empresaid;
-
-        if ($empresaid){
-            $datos = DB::table('users')
+        $this->run();
+        $datos = DB::table('users')
                         ->leftJoin('profiles','users.profid','profiles.id')
-                        ->leftJoin('ZE_EMPRESA','users.empresaid','ZE_EMPRESA.ID_EMP')
-                        ->select('users.*','profiles.profname','ZE_EMPRESA.DESCRIPCION')
-                        ->where('empresaid',$empresaid)
-                        ->paginate(30);
-            }else{
-                $datos = DB::table('users')
-                            ->leftJoin('profiles','users.profid','profiles.id')
-                            ->leftJoin('ZE_EMPRESA','users.empresaid','ZE_EMPRESA.ID_EMP')
-                            ->select('users.*','profiles.profname','ZE_EMPRESA.DESCRIPCION')
-                            ->paginate(30);
-            }
-        return view($this->slug.'.index', ['modules'=> $datos , 'infoApp' =>  $this->infoApp[0] , 'permisos'=> $this->permisos[0] , 'empresaSelect' => $empresaid ]  );
+                        ->select('users.*', 'profname',
+                         DB::raw('( CASE
+                         WHEN (SELECT COUNT(id) FROM enterprise_rels WHERE enterprise_rels.userid = users.id) = 1 THEN  (SELECT rs FROM enterprise_rels, enterprises WHERE enterprise_rels.userid = users.id AND enterprise_rels.enterpid = enterprises.id )
+                         WHEN (SELECT COUNT(id) FROM enterprise_rels WHERE enterprise_rels.userid = users.id) > 1 THEN  (SELECT CONCAT(COUNT(id),\' Empresas asociadas \') FROM enterprise_rels WHERE enterprise_rels.userid = users.id)
+                         ELSE \'Sin empresa\' END) AS empresas')
+                 )->paginate(Tools::paginacion());
+
+         return view($this->slug.'.index', ['modules'=> $datos , 'infoApp' =>  $this->infoApp[0] , 'permisos'=> $this->permisos[0] ]  );
     }
 
 
     public function create()
     {
-        $empresaid = Auth::user()->empresaid;
-        if (!$this->getAccessApp() || $this->permisos[0]->anew == 0 || $empresaid != 0 ) return redirect()->route('errorAccess');
-        $this->getOptionMenu();
-        return view($this->slug.'.create', ['infoApp' =>  $this->infoApp[0] , 'permisos'=> $this->permisos[0] , 'isnew'=>true ] );
+        $this->run();
+        $datos = new User;
+        return view($this->slug.'.create', ["empresas"=>'',"modules"=>$datos, 'infoApp' =>  $this->infoApp[0] , 'permisos'=> $this->permisos[0] , 'isnew'=>true ] );
     }
 
 
     public function store(Request $request)
     {
-            if (!$this->getAccessApp() || $this->permisos[0]->anew == 0) return redirect()->route('errorAccess');
+            $this->run();
+
+            $request->validate([
+                'password'=>'required|min:7',
+                'email'=>'required|unique:users'
+            ]);
 
             $datos = $request->except('_token');
 
@@ -87,13 +92,20 @@ class UsuariosController extends Controller
                         "name"=>$datos['name'],
                         "email"=>$datos['email'],
                         "profid"=>$datos['profid'],
-                        "empresaid"=>(isset($datos['ID_EMP'])) ? $datos['ID_EMP'] : '',
                         "password"=>bcrypt($datos['password']),
                         "created_at"=>Carbon::now()
                     ];
 
 
             $id = User::insertGetId($args);
+
+            if (isset($datos['empresas'])){
+                foreach($datos['empresas'] as $emp){
+                    DB::table('enterprise_rels')->insert(["userid"=>$id,"enterpid"=>$emp]);
+                }
+            }
+
+
             DB::table('permissions')->insert( ['userid'=>$id, 'profid'=>$datos['profid']] );
             UserController::log("Creo el usuario {$datos['name']} {$datos['email']} con ID=>{$id} ",'insert');
             return redirect($this->slug.'/');
@@ -105,20 +117,30 @@ class UsuariosController extends Controller
         //
     }
 
+    function getEmpresasUser($id){
+
+            $empreas = DB::table('enterprise_rels')->where('userid', $id)->get();
+            if (count($empreas)){
+                    foreach($empreas as $empresa){
+                        $lista[] = $empresa->enterpid;
+                    }
+                    return $lista;
+            }else
+                return '';
+    }
 
     public function edit($id)
     {
-        if (!$this->getAccessApp() || $this->permisos[0]->aedit == 0 ) return redirect()->route('errorAccess');
-        $this->getOptionMenu();
-        $empresaid = Auth::user()->empresaid;
+        $this->run();
         $datos = User::find($id);
-        return view($this->slug.'.edit', ["modules"=>$datos, 'infoApp' =>  $this->infoApp[0] , 'empresaSelect' => $empresaid ] );
+        $empresas = $this->getEmpresasUser($id);
+        return view($this->slug.'.edit', ["modules"=>$datos, 'infoApp' =>  $this->infoApp[0] , 'empresas' => $empresas ] );
     }
 
 
     public function update(Request $request, $id)
     {
-        if (!$this->getAccessApp() || $this->permisos[0]->aedit == 0 ) return redirect()->route('errorAccess');
+        $this->run();
 
         $datos = $request->except('_token');
 
@@ -126,22 +148,30 @@ class UsuariosController extends Controller
             "name"=>$datos['name'],
             "email"=>$datos['email'],
             "profid"=>$datos['profid'],
-            "empresaid"=>(isset($datos['ID_EMP'])) ? $datos['ID_EMP'] : '',
             "updated_at"=>Carbon::now()
         ];
+
         if ($datos['password']){
             $args["password"]=bcrypt($datos['password']);
+        }
+
+        if (isset($datos['empresas'])){
+            DB::table('enterprise_rels')->where('userid', $id)->delete();
+            foreach($datos['empresas'] as $emp){
+                DB::table('enterprise_rels')->insert(["userid"=>$id,"enterpid"=>$emp]);
+            }
         }
 
         User::where('id','=',$id)->update($args);
         DB::table('permissions')->where('userid','=',$id)->update(['profid'=>$datos['profid']]);
         UserController::log("Actualizo el usuario ".$this->getName($id)." con ID => {$id}",'update');
         return redirect($this->slug.'/');
+
     }
 
     public function destroy($id)
     {
-          if (!$this->getAccessApp() || $this->permisos[0]->adelete == 0 ) return redirect()->route('errorAccess');
+          $this->run();
           UserController::log("Elimino el usuario ".$this->getName($id)." con ID => {$id}",'delete');
           User::destroy($id);
           return redirect($this->slug.'/');

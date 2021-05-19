@@ -7,55 +7,43 @@
 
         <div class="card">
 
-                <div class="card-header">
-                    <h5><i class="{{$infoApp->iconapp}}"></i> {{$infoApp->nameapp}}</h3></h5>
-                    @if ($permisos->anew && $empresaSelect == 0)
-                    <div class="pull-right">
-                            <a class="btn btn-sm btn-primary" href="{{ url($infoApp->urlapp.'/create' ) }}">Nuevo</a>
-                    </div>
-                @endif
-                </div>
+                @include('part.card-header',["infoApp"=>$infoApp])
+
                 <div class="card-body">
-                <table class="table table-slim table-hover">
-                        <thead>
+                    <form action="{{ url($infoApp->urlapp) }}/buscador" method="post" enctype="multipart/form-data">
+                        @csrf
+                        @include('part.search')
+                    </form>
 
-                                <th>#</th>
-                                <th>DESCRIPCION</th>
-                                <th>NIT</th>
-                                <th>F_VALIDEZ</th>
-                                <th>COD_EMP_REL</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ( $modules as $module)
-                                <tr>
-                                    <td>{{$module->ID_EMP}}</td>
-                                    <td>{{($module->DESCRIPCION)}}</td>
-                                    <td>{{($module->NIT)}}</td>
-                                    <td>{{(_fechaInput($module->F_VALIDEZ))}}</td>
-                                    <td>{{($module->COD_EMP_REL)}}</td>
+                    <table class="table table-slim table-hover">
+                            <thead>
 
-                                    <td>
-                                        <div class="row">
-                                            <div class="col">
-                                                @if ($permisos->aedit)
-                                                <a class="btn btn-sm btn-primary m-0" href="{{ url($infoApp->urlapp.'/'.$module->ID_EMP.'/edit' ) }}">Editar</a>
-                                                @endif
-                                                @if ($permisos->adelete)
-                                            <form action="{{ url($infoApp->urlapp.'/'.$module->ID_EMP ) }}" method="post" class="d-inline">
-                                                    @csrf
-                                                    {{ method_field('DELETE') }}
-                                                    <button class="btn btn-sm btn-danger m-0 confirmacion" data-title="Desea borrar esta empresa ?">Borrar</button>
-                                            </form>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </td>
+                                    <th>#</th>
+                                    <th>Razón social</th>
+                                    <th>Nit</th>
+                                    <th>Base de datos</th>
+                                    <th>Dirección</th>
+                                    <th>Teléfono</th>
+                                    <th></th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                </table>
+                            </thead>
+                            <tbody>
+                                @foreach ( $modules as $module)
+                                    <tr>
+                                        <td>{{$module->id}}</td>
+                                        <td>{{$module->rs}}</td>
+                                        <td>{{$module->nit}}</td>
+                                        <td>@if(isset($module->db))<i class="feather icon-server"></i> @endif {{$module->db}}</td>
+                                        <td>{{$module->address}}</td>
+                                        <td>{{$module->phone}}</td>
+                                        <td>
+                                            @include('part.btnsimpleactions', ["permisos"=>$permisos , "infoApp"=>$infoApp])
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                    </table>
+                    @include('part.paginate', ["modules"=>$modules])
             </div>
         </div>
 

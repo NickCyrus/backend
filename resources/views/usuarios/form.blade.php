@@ -1,7 +1,7 @@
 <?php
 
-    use App\Http\Controllers\EmpresasController;
-    use App\Http\Controllers\PerfilesController;
+    use App\Http\Controllers\ToolsController;
+
 
 ?>
 <div class="row">
@@ -14,35 +14,46 @@
             <div class="row">
                     <div class="col-md-4 mb-3">
                         <label>Nombre</label>
-                        <input type="text" class="form-control" id="name" name="name" value="{{isset($modules->name) ? $modules->name : ''}}"  placeholder="Nombre" autofocus required>
+                        <input type="text" class="form-control" id="name" name="name" value="{{old('name',$modules->name)}}"  placeholder="Nombre" autofocus required>
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label>Email</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{isset($modules->email) ? $modules->email : ''}}"  placeholder="Email" required>
+                        <input type="email" class="form-control" id="email" name="email" value="{{old('email',$modules->email)}}"  placeholder="Email" required>
+                         @error('email')
+                                  <div class="p-1 error-field">{{$message}}</div>
+                         @enderror
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label>Perfil</label>
-                        @if (isset($modules->profid))
-                            {{PerfilesController::selectPerfiles($modules->profid , true)}}
-                        @else
-                            {{PerfilesController::selectPerfiles(Null, true)}}
-                        @endif
+                        {{Tools::selectHTML(["model"=>'profile',
+                                "key"=>'id',
+                                "label"=>"profname",
+                                "required"=>true,
+                                "selected"=>old('profid',$modules->profid),
+                                "name"=>"profid"
+                           ])}}
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label>Empresa</label>
-                        @if (isset($modules->empresaid))
-                            {{EmpresasController::selectEmpresas($modules->empresaid)}}
-                        @else
-                            {{EmpresasController::selectEmpresas()}}
-                        @endif
+                            {{Tools::selectHTML(["model"=>'enterprise',
+                                "key"=>'id',
+                                "label"=>"rs",
+                                "class"=>'select2',
+                                "multiple"=>true,
+                                "selected"=>old('empresas',$empresas),
+                                "name"=>"empresas[]"
+                           ])}}
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label>Contraseña</label>
                         <input type="password" class="form-control" id="password" name="password" value=""  {{isset($isnew) ? 'required' : ''}}   placeholder="Contraseña">
+                        @error('password')
+                            <div class="p-1 error-field">{{$message}}</div>
+                        @enderror
                     </div>
                     <div class="col-md-4 mb-3">
                         <label>Confirmar contraseña</label>
@@ -80,7 +91,7 @@
 
                     if ($('#password').val()){
                         if ($('#password').val() != $('#password2').val() ){
-                            fn.alert("Las contraseñas no cohinciden");
+                            fn.alert("Las contraseñas no coinciden");
                             return false;
                         }
                     }
@@ -90,9 +101,9 @@
                                 fn.wait('Por favor espere');
                             },
                             @if(isset($modules->id))
-                                url : '/{{$infoApp->urlapp}}/exist/'+$(input).val()+'/{{$modules->id}}',
-                            @else
-                                url : '/{{$infoApp->urlapp}}/exist/'+$(input).val(),
+                                url : '{{URL::to($infoApp->urlapp)}}/exist/'+$(input).val()+'/{{$modules->id}}',
+                             @else
+                                url : '{{URL::to($infoApp->urlapp)}}/exist/'+$(input).val(),
                             @endif
                             success : function(resp){
                                 if (resp.rs === 1){

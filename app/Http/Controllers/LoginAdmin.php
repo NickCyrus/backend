@@ -26,30 +26,44 @@ class LoginAdmin extends Controller
         }
 
         public function accessModule($idApp ){
-            $idUser  = Auth::User()->id;
+            $idUser  =  Auth::User()->id;
             $permisos = DB::table('permissions')
                             ->join('profiles','permissions.profid','profiles.id')
                             ->join('profpermissions','profiles.id','profpermissions.profid')
                             ->join('modulesapps','profpermissions.modappid','modulesapps.id')
                             ->where('userid', $idUser )
-                            ->where('aview', 1 )
+                            // ->where('aview', 1 )
                             ->where('modulesapps.id', $idApp )
                             ->get();
+
             return $permisos;
         }
 
-        public function getModulesAccess(){
+        static function getModulesAccess(){
                $idUser = Auth::User()->id;
                $modulos = DB::table('permissions')
                             ->join('profiles','permissions.profid','profiles.id')
                             ->join('profpermissions','profiles.id','profpermissions.profid')
                             ->join('modulesapps','profpermissions.modappid','modulesapps.id')
                             ->where('userid', $idUser )
-                            ->where('aview', 1 )
+                           // ->where('aview', 1 )
                             ->get();
               return $modulos;
 
         }
+
+        static function getModulesAccessMenu(){
+            $idUser = Auth::User()->id;
+            $modulos = DB::table('permissions')
+                         ->join('profiles','permissions.profid','profiles.id')
+                         ->join('profpermissions','profiles.id','profpermissions.profid')
+                         ->join('modulesapps','profpermissions.modappid','modulesapps.id')
+                         ->where('userid', $idUser )
+                         ->where('aview', 1 )
+                         ->get();
+           return $modulos;
+
+     }
 
         public function logout(Request $req , UserController $user) {
             $user->logAccessOut($req);

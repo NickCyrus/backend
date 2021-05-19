@@ -27,3 +27,26 @@ tr.cap{
 .cap td{
     font-weight: bold;
 }
+
+.table thead th{
+    border: none !important;
+    border-bottom: 3px solid #e6e6e6 !important;
+}
+
+.card .card-header h5{
+    font-size: 38px;
+}
+
+.bold , .b{ font-weight: bold; }
+.subline { text-decoration: underline; }
+
+.error-field{
+    color: #de7171;
+    display: block;
+    clear: both;
+    width: 100%;
+}
+
+.select2-container--default .select2-selection--multiple{
+    min-height: 43px;
+}

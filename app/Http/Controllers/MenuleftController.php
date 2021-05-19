@@ -14,7 +14,7 @@ class MenuleftController extends Controller
 
     public static function buildMenuLeft(  ){
         $user  = new LoginAdmin();
-        $items = $user->getModulesAccess();
+        $items = $user->getModulesAccessMenu();
         return view('menuleftitem',["items"=>$items]);
     }
 

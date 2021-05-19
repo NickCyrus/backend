@@ -9,6 +9,8 @@ use App\Http\Controllers\PerfilesController;
 use App\Http\Controllers\zonasespecialesController;
 use App\Http\Controllers\TrafosController;
 use App\Http\Controllers\UsuariosController;
+use App\Http\Controllers\logsusers;
+
 
 Route::get('/login', function () {
     return view('login');
@@ -27,8 +29,13 @@ Route::get('/errorAccess',function(){
 })->name('errorAccess');
 
 
+Route::group(['middleware' => 'ControlUser'], function () {
+    Route::get('/admin/nick', function(){ return "HOLA";} );
 
-Route::group(['middleware' => 'auth'], function () {
+});
+
+
+Route::group(['middleware' => ['auth', 'ControlUser'] ], function () {
     Route::get('/', function () { return view('dashboard'); });
 
     Route::get('dashboard', function () { return view('dashboard'); });
@@ -43,6 +50,9 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::resource('modules', ModulesController::class);
     Route::resource('empresas', EmpresasController::class);
+
+    Route::post('empresas/buscador', [EmpresasController::class,'buscador']);
+
     Route::resource('zonasespeciales', zonasespecialesController::class);
 
     Route::resource('trafos', TrafosController::class);
@@ -50,7 +60,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('tools/showicons', function () { return view('tools.showIcons'); });
 
-
+    Route::resource('logsusers', logsusers::class);
 
     /*Ajax*/
 

@@ -28,7 +28,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot( ConfigController $config , UserController $user )
     {
         Paginator::useBootstrap();
-        View::share('nameApp', $config->getConfig('nameApp'));
-        View::share('shortNameApp', $config->getConfig('shortNameApp'));
+        /* Start APP*/
+            View::share('nameApp', (object)["value"=>'ASECAP']);
+            View::share('shortNameApp', (object)["value"=>'ASECAP']);
+        /* Production App */
+            // View::share('nameApp', $config->getConfig('nameApp'));
+            // View::share('shortNameApp', $config->getConfig('shortNameApp'));
     }
+
 }

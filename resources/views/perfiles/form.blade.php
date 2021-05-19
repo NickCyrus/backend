@@ -9,7 +9,10 @@
                     <div class="col-md-6">
                         <label for="exampleInputEmail1">Nombre del perfil</label>
                             <div class="input-group">
-                                 <input type="text" class="form-control" id="profname" name="profname" value="{{isset($modules->profname) ? $modules->profname : ''}}"  placeholder="Nombre del perfil" autofocus required>
+                                 <input type="text" class="form-control" id="profname" name="profname" value="{{old('profname',$modules->profname)}}"  placeholder="Nombre del perfil" autofocus required>
+                                 @error('profname')
+                                     <div class="p-1 error-field">{{$message}}</div>
+                                 @enderror
                             </div>
                     </div>
                 </div>
@@ -38,10 +41,7 @@
                             </table>
                             <div class="alert alert-warning"> Para poder acceder a los modulos debe estar marcado el check "Habilitado" </div>
                     </div>
-                    <div class="col-md-12">
-                        <a href="/{{$infoApp->urlapp}}" class="btn btn-sm btn-danger">Cancelar</a>
-                        <button type="submit" onClick="return validarPerfil('#profname')" class="btn btn-sm btn-primary">Guardar</button>
-                    </div>
+                    @include('part.btn-submit',["infoApp"=>$infoApp , "onClick"=>"return validarPerfil('#profname')"])
 
 
                 </div>
@@ -57,9 +57,9 @@
                             fn.wait('Por favor espere');
                         },
                         @if(isset($modules->id))
-                            url : '/{{$infoApp->urlapp}}/exist/'+$(input).val()+'/{{$modules->id}}',
+                            url : '{{URL::to($infoApp->urlapp)}}/exist/'+$(input).val()+'/{{$modules->id}}',
                         @else
-                             url : '/{{$infoApp->urlapp}}/exist/'+$(input).val(),
+                             url : '{{URL::to($infoApp->urlapp)}}/exist/'+$(input).val(),
                         @endif
                         success : function(resp){
                             if (resp.rs === 1){

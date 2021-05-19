@@ -207,7 +207,11 @@ fn = {
                         content: options.content,
                         buttons: {
                             'Aceptar' : success,
-                            cancel: function () {}
+                            cancelar: {
+                                btnClass: 'btn-danger',
+                                action: function () {}
+                            }
+
                         }
                     });
 

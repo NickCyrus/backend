@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ZE_EMPRESA;
-use App\Http\Controllers\UserController;
+use App\Models\enterprise;
 use Illuminate\Http\Request;
 use DB;
-use Auth;
+use Tools;
+
 
 class EmpresasController extends Controller{
 
@@ -14,6 +14,11 @@ class EmpresasController extends Controller{
     var $idApp    = 4;
     var $infoApp  = '';
     var $permisos = '';
+
+    function run(){
+        $this->getOptionMenu();
+        $this->getAccessApp();
+    }
 
     function getAccessApp($mode = 'all'){
         $user     = new LoginAdmin();
@@ -25,120 +30,88 @@ class EmpresasController extends Controller{
         $this->infoApp = DB::table('modulesapps')->where('id', $this->idApp)->get();
     }
 
-    public function getName($id){
-        $PerfilName = ZE_EMPRESA::find($id);
-        return $PerfilName->DESCRIPCION;
-    }
-
     public function index(){
 
-        if (!$this->getAccessApp() || $this->permisos[0]->aview == 0) return redirect()->route('errorAccess');
-        $this->getOptionMenu();
+        $this->run();
 
-        $empresaid = Auth::user()->empresaid;
+        $datos = enterprise::paginate( Tools::paginacion() );
 
-        if ($empresaid){
-            $sql  = "SELECT ZE_EMPRESA.* ,  users.name
-                     FROM ZE_EMPRESA
-                     LEFT JOIN  users ON ZE_EMPRESA.USUARIO = CONVERT(varchar, users.id)
-                     WHERE ID_EMP = $empresaid";
-        }else{
-
-            $sql  = "SELECT ZE_EMPRESA.* ,  users.name
-                     FROM ZE_EMPRESA
-                     LEFT JOIN  users ON ZE_EMPRESA.USUARIO = CONVERT(varchar, users.id) ";
-        }
-
-
-
-        $datos = DB::select($sql);
-        return view($this->slug.'.index', ['modules'=> $datos , 'infoApp' =>  $this->infoApp[0] , 'permisos'=> $this->permisos[0] , 'empresaSelect'=>$empresaid  ]  );
+        return view($this->slug.'.index', ["modules"=>$datos ,
+                                           "permisos"=>$this->permisos[0] ,
+                                           "buscador"=>'',
+                                           "infoApp"=>$this->infoApp[0]]);
 
     }
 
     public function create(){
-        $empresaid = Auth::user()->empresaid;
-        if (!$this->getAccessApp() || $this->permisos[0]->anew == 0 || $empresaid) return redirect()->route('errorAccess');
-        return view('empresas.create');
+            $this->run();
+            $enterprise = new enterprise;
+            return view($this->slug.'.create', ["modules"=>$enterprise,"permisos"=>$this->permisos[0] , "infoApp"=>$this->infoApp[0]] );
     }
 
 
     public function store(Request $request){
 
-            if (!$this->getAccessApp() || $this->permisos[0]->anew == 0) return redirect()->route('errorAccess');
+            $request->validate([
+                        'rs'=>['required', 'min:5'],
+                        'nit'=>['required','unique:enterprises']
+            ]);
+
 
             $datos = $request->except('_token');
-            $args = [
-                "USUARIO"=>Auth::user()->id,
-                "F_ACTUAL"=>date("Y-m-d"),
-                "PROGRAMA"=>'WEB',
-                "DESCRIPCION"=>$request->DESCRIPCION,
-                "NIT"=>$request->NIT,
-                "F_VALIDEZ"=>$request->F_VALIDEZ,
-                "COD_EMP_REL"=>$request->COD_EMP_REL,
-            ];
+            $id    = enterprise::insertGetId($datos);
+            UserController::log("Creo la empresa ".Tools::getInfoTableByIdField('enterprise',$id, 'rs')." con ID => {$id}",'update');
+            return $this->index();
 
-            ZE_EMPRESA::insert($args);
-            UserController::log("Creo el registro en ZE_EMPRESA - {$request->DESCRIPCION} ",'insert');
-            return redirect($this->slug.'/');
     }
 
     public function show(ZE_EMPRESA $modules){
         //
     }
 
-
-    public static function selectEmpresas($empresaID = '' , $required = ''){
-
-        $empresaid = Auth::user()->empresaid;
-
-        if ( $empresaid )
-            $empresas = DB::table('ZE_EMPRESA')->where("ID_EMP",'=',$empresaid)->get();
-        else
-            $empresas = DB::table('ZE_EMPRESA')->get();
-
-        if ($empresas){
-            foreach($empresas as $empresa){
-                $items[$empresa->ID_EMP] = $empresa->DESCRIPCION;
-            }
-        }
-
-        return view('component.select',["items" =>$items, "value"=>$empresaID, "nameField"=>'ID_EMP' , 'required'=>$required , 'empresaSelect'=>$empresaid ]);
-
-
-    }
-
     public function edit($id){
-        if (!$this->getAccessApp() || $this->permisos[0]->aedit == 0 ) return redirect()->route('errorAccess');
         $this->getOptionMenu();
-        $datos = ZE_EMPRESA::find($id);
+        $datos = enterprise::find($id);
+
         return view($this->slug.'.edit', ["modules"=>$datos, 'infoApp' =>  $this->infoApp[0] ] );
     }
 
     public function update(Request $request, $id){
+        $datos = $request->except(['_token','_method']);
 
-        if (!$this->getAccessApp() || $this->permisos[0]->aedit == 0 ) return redirect()->route('errorAccess');
-        $datos = $request->except('_token','_method');
-        $args = [
-            "USUARIO"=>Auth::user()->id,
-            "F_ACTUAL"=>date("Y-m-d"),
-            "PROGRAMA"=>'WEB',
-            "DESCRIPCION"=>$request->DESCRIPCION,
-            "NIT"=>$request->NIT,
-            "F_VALIDEZ"=>$request->F_VALIDEZ,
-            "COD_EMP_REL"=>$request->COD_EMP_REL,
-        ];
-        ZE_EMPRESA::where('ID_EMP','=',$id)->update($args);
-        UserController::log("Actualizo el registro en ZE_EMPRESA ".$this->getName($id)." con ID => {$id}",'update');
+        $request->validate([
+            'rs'=>['required', 'min:5'],
+            'nit'=>['required','unique:enterprises,nit,'.$id]
+        ]);
+
+        enterprise::where('id','=',$id)->update($datos);
+        UserController::log("Actualizo la empresa ".Tools::getInfoTableByIdField('enterprise',$id, 'rs')." con ID => {$id}",'update');
         return redirect($this->slug.'/');
     }
 
 
     public function destroy($id) {
-          if (!$this->getAccessApp() || $this->permisos[0]->adelete == 0 ) return redirect()->route('errorAccess');
-          UserController::log("Elimino el registro en ZE_EMPRESA ".$this->getName($id)." con ID => {$id}",'delete');
-          ZE_EMPRESA::destroy($id);
-          return redirect($this->slug.'/');
+        UserController::log("Elimino la empresa ".Tools::getInfoTableByIdField('enterprise',$id, 'rs')." con ID => {$id}",'delete');
+        enterprise::destroy($id);
+        return redirect($this->slug.'/');
+    }
+
+    public function buscador(Request $request){
+
+
+        $this->run();
+        DB::enableQueryLog();
+        $datos = enterprise::orWhere("nit","like","%{$request->buscador}%")
+                    ->orWhere("rs","like","%{$request->buscador}%")
+                    ->orWhere("db","like","%{$request->buscador}%")
+                    ->orWhere("address","like","%{$request->buscador}%")->paginate( Tools::paginacion() );
+
+        return view($this->slug.'.index', ["modules"=>$datos ,
+                                           "permisos"=>$this->permisos[0] ,
+                                           "infoApp"=>$this->infoApp[0],
+                                           "buscador"=>$request->buscador]);
+
+
     }
 
 }
