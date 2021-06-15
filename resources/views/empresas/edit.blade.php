@@ -2,9 +2,8 @@
 
 @section('title','Dashboard')
 
-
 @section('content')
-    <form action="{{ route('empresas.update' , $modules->id) }}" method="post" enctype="multipart/form-data">
+    <form action="{{ route('empresas.update' , $modules->ID_EMP) }}" method="post" enctype="multipart/form-data">
         @csrf
         @method('PATCH')
         @include('empresas.form')

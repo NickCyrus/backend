@@ -14,7 +14,7 @@ class CreateProfpermissionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('profpermissions', function (Blueprint $table) {
+        Schema::create('ZE_profpermissions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
 
@@ -27,7 +27,7 @@ class CreateProfpermissionsTable extends Migration
 
         });
 
-        DB::table("profpermissions")->insert([
+        DB::table("ZE_profpermissions")->insert([
             ["profid" => 1,"modappid"=>1, "aview"=>1, "anew"=>1, "aedit"=>1, "adelete"=>1, "created_at"=> Carbon::now() ],
             ["profid" => 1,"modappid"=>2, "aview"=>1, "anew"=>1, "aedit"=>1, "adelete"=>1, "created_at"=> Carbon::now() ],
             ["profid" => 1,"modappid"=>3, "aview"=>1, "anew"=>1, "aedit"=>1, "adelete"=>1, "created_at"=> Carbon::now() ],
@@ -43,6 +43,6 @@ class CreateProfpermissionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('profpermissions');
+        Schema::dropIfExists('ZE_profpermissions');
     }
 }

@@ -13,7 +13,7 @@ class CreateLogActionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('log_actions', function (Blueprint $table) {
+        Schema::create('ZE_log_actions', function (Blueprint $table) {
 
             $table->id();
             $table->timestamps();
@@ -34,6 +34,6 @@ class CreateLogActionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('log_actions');
+        Schema::dropIfExists('ZE_log_actions');
     }
 }

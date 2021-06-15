@@ -7,6 +7,9 @@ use App\Models\User;
 use Auth;
 use DB;
 use Tools;
+use App\Models\modulesapp;
+use App\Models\LogAction;
+
 
 class logsusers extends Controller
 {
@@ -23,7 +26,7 @@ class logsusers extends Controller
     }
 
     function getOptionMenu(){
-        $this->infoApp = DB::table('modulesapps')->where('id', $this->idApp)->get();
+        $this->infoApp = modulesapp::where('id', $this->idApp)->get();
     }
 
     function getAccessApp($mode = 'all'){
@@ -36,9 +39,8 @@ class logsusers extends Controller
     function index()
     {
       $this->run();
-      $datos  = DB::table('log_actions')
-                ->leftJoin('users','log_actions.userid','users.id')
-                ->select("log_actions.*","users.name","users.email")
+      $datos  = LogAction::leftJoin('ZE_users','ZE_log_actions.userid','ZE_users.id')
+                ->select("ZE_log_actions.*","ZE_users.name","ZE_users.email")
                 ->orderby('id','desc')->paginate(Tools::paginacion());
       return view($this->slug.'.index', ['logact'=> $datos , 'infoApp' =>  $this->infoApp[0] , 'permisos'=> $this->permisos[0] ]  );
     }

@@ -14,14 +14,14 @@ class CreatePermissionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('permissions', function (Blueprint $table) {
+        Schema::create('ZE_permissions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->integer('userid');
             $table->integer('profid');
         });
 
-        DB::table("permissions")->insert([
+        DB::table("ZE_permissions")->insert([
             ["userid" => 1,"profid" => 1,  "created_at"=> Carbon::now() ]
         ],true);
 

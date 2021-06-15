@@ -4,14 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\UserController;
-use App\Models\User;
-use App\Models\enterprise_rel;
 use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
-use Db;
+use DB;
 use Auth;
 use Tools;
 
+use App\Models\modulesapp;
+use App\Models\User;
+use App\Models\enterprise_rel;
+use App\Models\permission;
+use App\Models\profpermission;
 
 class UsuariosController extends Controller
 {
@@ -36,9 +39,9 @@ class UsuariosController extends Controller
     public function exist($email , $id =''){
 
         if (!isset($id))
-            $modulos = DB::table('users')->where('email',$email)->get();
+            $modulos = User::where('email',$email)->get();
         else
-            $modulos = DB::table('users')->where('email',$email)->where('id','<>',$id)->get();
+            $modulos = User::where('email',$email)->where('id','<>',$id)->get();
 
          return (count($modulos)) ? json_encode(array("rs"=>1)) : json_encode(array("rs"=>0));
     }
@@ -50,20 +53,23 @@ class UsuariosController extends Controller
     }
 
     function getOptionMenu(){
-         $this->infoApp = DB::table('modulesapps')->where('id', $this->idApp)->get();
+         $this->infoApp = modulesapp::where('id', $this->idApp)->get();
     }
 
     public function index()
     {
         $this->run();
-        $datos = DB::table('users')
-                        ->leftJoin('profiles','users.profid','profiles.id')
-                        ->select('users.*', 'profname',
+
+        $datos = DB::table('ZE_users')
+                        ->leftJoin('ZE_profiles','ZE_users.profid','ZE_profiles.id')
+                        ->select('ZE_users.*', 'profname',
                          DB::raw('( CASE
-                         WHEN (SELECT COUNT(id) FROM enterprise_rels WHERE enterprise_rels.userid = users.id) = 1 THEN  (SELECT rs FROM enterprise_rels, enterprises WHERE enterprise_rels.userid = users.id AND enterprise_rels.enterpid = enterprises.id )
-                         WHEN (SELECT COUNT(id) FROM enterprise_rels WHERE enterprise_rels.userid = users.id) > 1 THEN  (SELECT CONCAT(COUNT(id),\' Empresas asociadas \') FROM enterprise_rels WHERE enterprise_rels.userid = users.id)
+                         WHEN (SELECT COUNT(id) FROM ZE_enterprise_rels WHERE ZE_enterprise_rels.userid = ZE_users.id) = 1 THEN  (SELECT DESCRIPCION FROM ZE_enterprise_rels, ZE_EMPRESA WHERE ZE_enterprise_rels.userid = ZE_users.id AND ZE_enterprise_rels.enterpid = ZE_EMPRESA.ID_EMP )
+                         WHEN (SELECT COUNT(id) FROM ZE_enterprise_rels WHERE ZE_enterprise_rels.userid = ZE_users.id) > 1 THEN  (SELECT CONCAT(COUNT(id),\' Empresas asociadas \') FROM ZE_enterprise_rels WHERE ZE_enterprise_rels.userid = ZE_users.id)
                          ELSE \'Sin empresa\' END) AS empresas')
                  )->paginate(Tools::paginacion());
+
+        // $datos =User::paginate( Tools::paginacion());
 
          return view($this->slug.'.index', ['modules'=> $datos , 'infoApp' =>  $this->infoApp[0] , 'permisos'=> $this->permisos[0] ]  );
     }
@@ -82,8 +88,8 @@ class UsuariosController extends Controller
             $this->run();
 
             $request->validate([
-                'password'=>'required|min:7',
-                'email'=>'required|unique:users'
+                'password'=>'required|min:6',
+                'email'=>'required|unique:ZE_users'
             ]);
 
             $datos = $request->except('_token');
@@ -101,12 +107,10 @@ class UsuariosController extends Controller
 
             if (isset($datos['empresas'])){
                 foreach($datos['empresas'] as $emp){
-                    DB::table('enterprise_rels')->insert(["userid"=>$id,"enterpid"=>$emp]);
+                    enterprise_rel::insert(["userid"=>$id,"enterpid"=>$emp]);
                 }
             }
-
-
-            DB::table('permissions')->insert( ['userid'=>$id, 'profid'=>$datos['profid']] );
+            permission::insert( ['userid'=>$id, 'profid'=>$datos['profid']] );
             UserController::log("Creo el usuario {$datos['name']} {$datos['email']} con ID=>{$id} ",'insert');
             return redirect($this->slug.'/');
     }
@@ -119,7 +123,7 @@ class UsuariosController extends Controller
 
     function getEmpresasUser($id){
 
-            $empreas = DB::table('enterprise_rels')->where('userid', $id)->get();
+            $empreas = enterprise_rel::where('userid', $id)->get();
             if (count($empreas)){
                     foreach($empreas as $empresa){
                         $lista[] = $empresa->enterpid;
@@ -140,7 +144,13 @@ class UsuariosController extends Controller
 
     public function update(Request $request, $id)
     {
+
+
         $this->run();
+
+        $request->validate([
+            'email'=>'required|exists:ZE_users,email'
+        ]);
 
         $datos = $request->except('_token');
 
@@ -156,14 +166,14 @@ class UsuariosController extends Controller
         }
 
         if (isset($datos['empresas'])){
-            DB::table('enterprise_rels')->where('userid', $id)->delete();
+            enterprise_rel::where('userid', $id)->delete();
             foreach($datos['empresas'] as $emp){
-                DB::table('enterprise_rels')->insert(["userid"=>$id,"enterpid"=>$emp]);
+                enterprise_rel::insert(["userid"=>$id,"enterpid"=>$emp]);
             }
         }
 
         User::where('id','=',$id)->update($args);
-        DB::table('permissions')->where('userid','=',$id)->update(['profid'=>$datos['profid']]);
+        permission::where('userid','=',$id)->update(['profid'=>$datos['profid']]);
         UserController::log("Actualizo el usuario ".$this->getName($id)." con ID => {$id}",'update');
         return redirect($this->slug.'/');
 

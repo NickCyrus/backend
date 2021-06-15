@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class modulesapp extends Model
 {
     use HasFactory;
+
+    protected $table = "ZE_modulesapps";
+
+
 }

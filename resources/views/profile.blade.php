@@ -16,7 +16,7 @@
                     <div class="row">
                         @if (isset($Response))
                             <div class="col-md-12 mb-3">
-                                <div class="alert alert-success">Guardado correctamente</div>
+                                <div class="alert alert-success"> <i class="fa fa-check"></i> Guardado correctamente.</div>
                             </div>
                         @endif
                         <div class="col-md-6 mb-3">

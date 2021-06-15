@@ -18,11 +18,11 @@
                     <table class="table table-slim table-hover">
                             <thead>
 
-                                    <th>#</th>
-                                    <th>Razón social</th>
-                                    <th>Nit</th>
-                                    <th>Base de datos</th>
-                                    <th>Dirección</th>
+                                    <th>ID_EMP</th>
+                                    <th>DESCRIPCION</th>
+                                    <th>NIT</th>
+                                    <th>F_VALIDEZ</th>
+                                    <th>COD_EMP_REL</th>
                                     <th>Teléfono</th>
                                     <th></th>
                                 </tr>
@@ -30,14 +30,13 @@
                             <tbody>
                                 @foreach ( $modules as $module)
                                     <tr>
-                                        <td>{{$module->id}}</td>
-                                        <td>{{$module->rs}}</td>
-                                        <td>{{$module->nit}}</td>
-                                        <td>@if(isset($module->db))<i class="feather icon-server"></i> @endif {{$module->db}}</td>
-                                        <td>{{$module->address}}</td>
-                                        <td>{{$module->phone}}</td>
+                                        <td>{{$module->ID_EMP}}</td>
+                                        <td>{{$module->DESCRIPCION}}</td>
+                                        <td>{{$module->NIT}}</td>
+                                        <td>{{_fechaInput($module->F_VALIDEZ)}}</td>
+                                        <td>{{$module->COD_EMP_REL}}</td>
                                         <td>
-                                            @include('part.btnsimpleactions', ["permisos"=>$permisos , "infoApp"=>$infoApp])
+                                            @include('part.btnsimpleactions', ["keyid"=>$module->ID_EMP ,"permisos"=>$permisos , "infoApp"=>$infoApp])
                                         </td>
                                     </tr>
                                 @endforeach

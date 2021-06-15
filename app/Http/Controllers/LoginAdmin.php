@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\UserController;
 use Auth;
 use DB;
+use App\Models\User;
+use App\Models\permission;
 
 class LoginAdmin extends Controller
 {
@@ -27,13 +29,11 @@ class LoginAdmin extends Controller
 
         public function accessModule($idApp ){
             $idUser  =  Auth::User()->id;
-            $permisos = DB::table('permissions')
-                            ->join('profiles','permissions.profid','profiles.id')
-                            ->join('profpermissions','profiles.id','profpermissions.profid')
-                            ->join('modulesapps','profpermissions.modappid','modulesapps.id')
+            $permisos = permission::join('ZE_profiles','ZE_permissions.profid','ZE_profiles.id')
+                            ->join('ZE_profpermissions','ZE_profiles.id','ZE_profpermissions.profid')
+                            ->join('ZE_modulesapps','ZE_profpermissions.modappid','ZE_modulesapps.id')
                             ->where('userid', $idUser )
-                            // ->where('aview', 1 )
-                            ->where('modulesapps.id', $idApp )
+                            ->where('ZE_modulesapps.id', $idApp )
                             ->get();
 
             return $permisos;
@@ -41,12 +41,10 @@ class LoginAdmin extends Controller
 
         static function getModulesAccess(){
                $idUser = Auth::User()->id;
-               $modulos = DB::table('permissions')
-                            ->join('profiles','permissions.profid','profiles.id')
-                            ->join('profpermissions','profiles.id','profpermissions.profid')
-                            ->join('modulesapps','profpermissions.modappid','modulesapps.id')
+               $modulos = permission::join('ZE_profiles','ZE_permissions.profid','ZE_profiles.id')
+                            ->join('ZE_profpermissions','ZE_profiles.id','ZE_profpermissions.profid')
+                            ->join('ZE_modulesapps','ZE_profpermissions.modappid','ZE_modulesapps.id')
                             ->where('userid', $idUser )
-                           // ->where('aview', 1 )
                             ->get();
               return $modulos;
 
@@ -54,12 +52,12 @@ class LoginAdmin extends Controller
 
         static function getModulesAccessMenu(){
             $idUser = Auth::User()->id;
-            $modulos = DB::table('permissions')
-                         ->join('profiles','permissions.profid','profiles.id')
-                         ->join('profpermissions','profiles.id','profpermissions.profid')
-                         ->join('modulesapps','profpermissions.modappid','modulesapps.id')
+            $modulos = permission::join('ZE_profiles','ZE_permissions.profid','ZE_profiles.id')
+                         ->join('ZE_profpermissions','ZE_profiles.id','ZE_profpermissions.profid')
+                         ->join('ZE_modulesapps','ZE_profpermissions.modappid','ZE_modulesapps.id')
                          ->where('userid', $idUser )
                          ->where('aview', 1 )
+                         ->orderBy('orderapp')
                          ->get();
            return $modulos;
 
@@ -73,7 +71,7 @@ class LoginAdmin extends Controller
 
         public static function updateLastLoginDate(){
             if (Auth::check()){
-                    DB::table('users')->where('id', Auth::User()->id)->update(['updated_at' => \Carbon\Carbon::now()->toDateTimeString()]);
+                    User::where('id', Auth::User()->id)->update(['updated_at' =>now()]);
              }
         }
 

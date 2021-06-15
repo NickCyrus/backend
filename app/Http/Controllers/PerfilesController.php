@@ -31,7 +31,7 @@ class PerfilesController extends Controller
     }
 
     function getOptionMenu(){
-         $this->infoApp = DB::table('modulesapps')->where('id', $this->idApp)->get();
+         $this->infoApp = modulesapp::where('id', $this->idApp)->get();
     }
 
     public function index()
@@ -52,9 +52,9 @@ class PerfilesController extends Controller
     public function exist($perfil , $id =''){
 
             if (!isset($id))
-                $modulos = DB::table('profiles')->where('profname',$perfil)->get();
+                $modulos = profile::where('profname',$perfil)->get();
             else
-                $modulos = DB::table('profiles')->where('profname',$perfil)->where('id','<>',$id)->get();
+                $modulos = profile::where('profname',$perfil)->where('id','<>',$id)->get();
 
              return (count($modulos)) ? json_encode(array("rs"=>1)) : json_encode(array("rs"=>0));
     }
@@ -65,12 +65,12 @@ class PerfilesController extends Controller
             $datos  = $request->except('_token');
 
             $request->validate([
-                'profname'=>['required','min:5','unique:profiles']
+                'profname'=>['required','min:5','unique:ZE_profiles']
             ]);
 
             $id     = profile::insertGetId( ['profname'=>$datos['profname'] , "created_at"=>Carbon::now()] );
 
-            $modulos = DB::table('modulesapps')->get();
+            $modulos = modulesapp::get();
 
             if ($modulos){
                 foreach($modulos as $modulo){
@@ -94,7 +94,7 @@ class PerfilesController extends Controller
 
     public static function selectPerfiles($empresaID = '' , $required = ''){
 
-        $empresas = DB::table('profiles')->get();
+        $empresas = profile::get();
 
         if ($empresas){
             foreach($empresas as $empresa){
@@ -113,8 +113,8 @@ class PerfilesController extends Controller
         $datos         = profile::find($id);
         $List_permisos = array();
 
-        $sql =  "SELECT modulesapps.* , aview  , anew , aedit , adelete   FROM modulesapps
-                 LEFT JOIN profpermissions ON modulesapps.id = profpermissions.modappid AND profpermissions.profid = {$id} ";
+        $sql =  "SELECT ZE_modulesapps.* , aview  , anew , aedit , adelete   FROM ZE_modulesapps
+                 LEFT JOIN ZE_profpermissions ON ZE_modulesapps.id = ZE_profpermissions.modappid AND ZE_profpermissions.profid = {$id} ";
 
         $permisos = DB::select($sql);
 
@@ -145,12 +145,12 @@ class PerfilesController extends Controller
         $datos = $request->except('_token','_method');
 
         $request->validate([
-            'profname'=>['required','min:5','unique:profiles,profname,'.$id]
+            'profname'=>['required','min:5','unique:ZE_profiles,profname,'.$id]
         ]);
 
 
         profile::where('id','=',$id)->update(['profname'=>$datos['profname'] , "updated_at"=>Carbon::now()]);
-        $modulos = DB::table('modulesapps')->get();
+        $modulos = modulesapp::get();
 
             if ($modulos){
                 foreach($modulos as $modulo){

@@ -14,7 +14,7 @@ class CreateEnterprisesTable extends Migration
      */
     public function up()
     {
-        Schema::create('enterprises', function (Blueprint $table) {
+        Schema::create('ZE_enterprises', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->string('rs')->nullable();
@@ -36,6 +36,6 @@ class CreateEnterprisesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('enterprises');
+        Schema::dropIfExists('ZE_enterprises');
     }
 }

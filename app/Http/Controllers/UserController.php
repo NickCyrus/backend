@@ -7,6 +7,9 @@ use Jenssegers\Agent\Agent;
 use Auth;
 use Carbon\Carbon;
 use DB;
+use App\Http\Controllers\LoginAdmin;
+use App\Models\LogLogin;
+use App\Models\LogAction;
 
 class UserController extends Controller
 {
@@ -24,14 +27,13 @@ class UserController extends Controller
         $user  = Auth::user();
         $agent = new Agent();
         $msg   = str_replace('[nameuser]',$user->name, $msg );
-        DB::table('log_actions')->insert( ['created_at'=>Carbon::now(), 'userid'=>$user->id , 'ipaccess'=>\request()->ip() , 'comment'=>$msg , 'action'=>$action ]);
+        LogAction::insert( ['created_at'=>Carbon::now(), 'userid'=>$user->id , 'ipaccess'=>\request()->ip() , 'comment'=>$msg , 'action'=>$action ]);
     }
 
     function view_profile(){
-            $user = Auth::user();
-
-            $records = DB::table('log_logins')->where('userid', $user->id)->limit(30)->get();
-            $logact  = DB::table('log_actions')->where('userid', $user->id)->orderby('id','desc')->limit(30)->get();
+            $user    = Auth::user();
+            $records = LogLogin::where('userid', $user->id)->limit(30)->get();
+            $logact  = LogAction::where('userid', $user->id)->orderby('id','desc')->limit(30)->get();
             return view('profile',["User" =>$user, "records"=>$records , "logact"=>$logact]);
     }
 
@@ -42,8 +44,11 @@ class UserController extends Controller
         $password = bcrypt($request->pass1); // Encripte el password
         $user->password = $password; // Rellene el usuario con el nuevo password ya encriptado
         $user->save(); // Guarde el usuario
-        return view('profile',["User" =>$user, "Response"=>'success']);
-    }
+        $this->log('Actualizo al contraseña de su cuenta','update');
+        $records = LogLogin::where('userid', $user->id)->limit(30)->get();
+        $logact  = LogAction::where('userid', $user->id)->orderby('id','desc')->limit(30)->get();
+        return view('profile',["User" =>$user, "Response"=>'success', "records"=>$records , "logact"=>$logact]);
+   }
 
     function logAccess( $req ){
 
@@ -54,7 +59,7 @@ class UserController extends Controller
         if ( $agent->isDesktop() ) $device = 'PC';
         if ( $agent->isMobile() ) $device = 'MOBIL';
 
-        DB::table("log_logins")->insert([
+        LogLogin::insert([
             ["userid" =>$user->id,
              "ipaccess" => $req->ip() ,
              "agent"=> $this->userAgent(),
@@ -75,7 +80,7 @@ class UserController extends Controller
         if ( $agent->isDesktop() ) $device = 'PC';
         if ( $agent->isMobile() ) $device = 'MOBIL';
 
-        DB::table("log_logins")->insert([
+        LogLogin::insert([
             ["userid" =>$user->id,
              "ipaccess" => $req->ip() ,
              "agent"=> $this->userAgent(),

@@ -7,14 +7,10 @@ use Carbon\Carbon;
 
 class CreateUsersTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
+
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('ZE_users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
@@ -26,7 +22,7 @@ class CreateUsersTable extends Migration
         });
 
 
-        DB::table("users")->insert([
+        DB::table("ZE_users")->insert([
             ["name" =>'Administrador',
              "profid"=>1,
              "email" => 'demo@demo.com',
@@ -44,6 +40,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('ZE_users');
     }
 }

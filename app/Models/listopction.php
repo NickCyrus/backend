@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class listopction extends Model
 {
     use HasFactory;
+
+    protected $table = "ZE_listopctions";
+
 }

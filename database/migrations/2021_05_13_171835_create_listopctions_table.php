@@ -14,30 +14,12 @@ class CreateListopctionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('listopctions', function (Blueprint $table) {
+        Schema::create('ZE_listopctions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->integer('type');
             $table->string('label');
         });
-
-        DB::table("listopctions")->insert([
-                [ "type" =>'1', "label"=>"Persona natural comerciante", "created_at"=> Carbon::now() ],
-                [ "type" =>'1', "label"=>"Empresa unipersonal", "created_at"=> Carbon::now() ],
-                [ "type" =>'1', "label"=>"Sociedades por Acciones Simplificadas", "created_at"=> Carbon::now() ],
-                [ "type" =>'1', "label"=>"Sociedad Limitada", "created_at"=> Carbon::now() ],
-                [ "type" =>'1', "label"=>"Sociedad Colectiva", "created_at"=> Carbon::now() ],
-                [ "type" =>'1', "label"=>"Sociedad En Comandita Simple", "created_at"=> Carbon::now() ],
-                [ "type" =>'1', "label"=>"Sociedad Anónima", "created_at"=> Carbon::now() ],
-                [ "type" =>'1', "label"=>"Sociedad En Comandita por Acciones", "created_at"=> Carbon::now() ],
-                [ "type" =>'1', "label"=>"La Empresa Asociativa de Trabajo", "created_at"=> Carbon::now() ],
-                [ "type" =>'1', "label"=>"Sociedades Agrarias de Transformación", "created_at"=> Carbon::now() ],
-                [ "type" =>'1', "label"=>"Establecimiento de comerio", "created_at"=> Carbon::now() ],
-                [ "type" =>'1', "label"=>"Autónomo", "created_at"=> Carbon::now() ],
-                [ "type" =>'1', "label"=>"Cooperativa", "created_at"=> Carbon::now() ],
-                [ "type" =>'1', "label"=>"Comunidad de bienes", "created_at"=> Carbon::now() ],
-                [ "type" =>'1', "label"=>"Sociedad civil", "created_at"=> Carbon::now() ],
-        ],true);
     }
 
     /**
@@ -47,6 +29,6 @@ class CreateListopctionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('listopctions');
+        Schema::dropIfExists('ZE_listopctions');
     }
 }

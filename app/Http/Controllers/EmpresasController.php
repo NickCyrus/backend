@@ -6,6 +6,13 @@ use App\Models\enterprise;
 use Illuminate\Http\Request;
 use DB;
 use Tools;
+use Auth;
+use App\Models\modulesapp;
+use App\Models\User;
+use App\Models\enterprise_rel;
+use App\Models\permission;
+use App\Models\profpermission;
+use Illuminate\Support\Facades\Config;
 
 
 class EmpresasController extends Controller{
@@ -14,10 +21,12 @@ class EmpresasController extends Controller{
     var $idApp    = 4;
     var $infoApp  = '';
     var $permisos = '';
+    var $currenUser = '';
 
     function run(){
         $this->getOptionMenu();
         $this->getAccessApp();
+        $this->currenUser  = Auth::user();
     }
 
     function getAccessApp($mode = 'all'){
@@ -27,7 +36,7 @@ class EmpresasController extends Controller{
     }
 
     function getOptionMenu(){
-        $this->infoApp = DB::table('modulesapps')->where('id', $this->idApp)->get();
+        $this->infoApp = modulesapp::where('id', $this->idApp)->get();
     }
 
     public function index(){
@@ -53,15 +62,25 @@ class EmpresasController extends Controller{
     public function store(Request $request){
 
             $request->validate([
-                        'rs'=>['required', 'min:5'],
-                        'nit'=>['required','unique:enterprises']
+                'NIT'=>['required','unique:ZE_EMPRESA']
             ]);
 
+            $this->run();
 
             $datos = $request->except('_token');
-            $id    = enterprise::insertGetId($datos);
-            UserController::log("Creo la empresa ".Tools::getInfoTableByIdField('enterprise',$id, 'rs')." con ID => {$id}",'update');
-            return $this->index();
+            $args = [
+                     "USUARIO"=> $this->currenUser->id,
+                     "F_ACTUAL"=>now(),
+                     "PROGRAMA"=> Config::get('constante.PROGRAMA'),
+                     "DESCRIPCION"=>$datos['DESCRIPCION'],
+                     "NIT"=>$datos['NIT'],
+                     "F_VALIDEZ"=>$datos['F_VALIDEZ'],
+                     "COD_EMP_REL"=>$datos['COD_EMP_REL'],
+                     ];
+
+           $id    = enterprise::insertGetId($args);
+           UserController::log("Creo la ZE EMPRESA ".Tools::getInfoTableByIdField('enterprise',$id, 'DESCRIPCION')." con ID => {$id}",'update');
+           return $this->index();
 
     }
 
@@ -72,7 +91,6 @@ class EmpresasController extends Controller{
     public function edit($id){
         $this->getOptionMenu();
         $datos = enterprise::find($id);
-
         return view($this->slug.'.edit', ["modules"=>$datos, 'infoApp' =>  $this->infoApp[0] ] );
     }
 
@@ -80,18 +98,28 @@ class EmpresasController extends Controller{
         $datos = $request->except(['_token','_method']);
 
         $request->validate([
-            'rs'=>['required', 'min:5'],
-            'nit'=>['required','unique:enterprises,nit,'.$id]
+            'NIT'=>['required','exists:ZE_EMPRESA,NIT']
         ]);
 
-        enterprise::where('id','=',$id)->update($datos);
-        UserController::log("Actualizo la empresa ".Tools::getInfoTableByIdField('enterprise',$id, 'rs')." con ID => {$id}",'update');
+        $this->run();
+
+        $args = [
+            "USUARIO"=> $this->currenUser->id,
+            "F_ACTUAL"=>now(),
+            "PROGRAMA"=> Config::get('constante.PROGRAMA'),
+            "DESCRIPCION"=>$datos['DESCRIPCION'],
+            "NIT"=>$datos['NIT'],
+            "F_VALIDEZ"=>$datos['F_VALIDEZ'],
+            "COD_EMP_REL"=>$datos['COD_EMP_REL'],
+            ];
+        enterprise::where('ID_EMP','=',$id)->update($args);
+        UserController::log("Actualizo la ZE EMPRESA ".Tools::getInfoTableByIdField('enterprise',$id, 'DESCRIPCION')." con ID => {$id}",'update');
         return redirect($this->slug.'/');
     }
 
 
     public function destroy($id) {
-        UserController::log("Elimino la empresa ".Tools::getInfoTableByIdField('enterprise',$id, 'rs')." con ID => {$id}",'delete');
+        UserController::log("Elimino la ZE EMPRESA ".Tools::getInfoTableByIdField('enterprise',$id, 'DESCRIPCION')." con ID => {$id}",'delete');
         enterprise::destroy($id);
         return redirect($this->slug.'/');
     }
@@ -101,10 +129,9 @@ class EmpresasController extends Controller{
 
         $this->run();
         DB::enableQueryLog();
-        $datos = enterprise::orWhere("nit","like","%{$request->buscador}%")
-                    ->orWhere("rs","like","%{$request->buscador}%")
-                    ->orWhere("db","like","%{$request->buscador}%")
-                    ->orWhere("address","like","%{$request->buscador}%")->paginate( Tools::paginacion() );
+        $datos = enterprise::orWhere("NIT","like","%{$request->buscador}%")
+                    ->orWhere("DESCRIPCION","like","%{$request->buscador}%")
+                    ->orWhere("COD_EMP_REL","like","%{$request->buscador}%")->paginate( Tools::paginacion() );
 
         return view($this->slug.'.index', ["modules"=>$datos ,
                                            "permisos"=>$this->permisos[0] ,

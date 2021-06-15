@@ -39,8 +39,8 @@
                     <div class="col-md-4 mb-3">
                         <label>Empresa</label>
                             {{Tools::selectHTML(["model"=>'enterprise',
-                                "key"=>'id',
-                                "label"=>"rs",
+                                "key"=>'ID_EMP',
+                                "label"=>"DESCRIPCION",
                                 "class"=>'select2',
                                 "multiple"=>true,
                                 "selected"=>old('empresas',$empresas),

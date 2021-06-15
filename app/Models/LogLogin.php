@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class LogLogin extends Model
 {
     use HasFactory;
+
+    protected $table = "ZE_log_logins";
 }

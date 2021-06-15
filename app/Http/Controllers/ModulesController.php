@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use DB;
 use Tools;
 
+
 use Illuminate\Http\Request;
 
 class ModulesController extends Controller
@@ -30,14 +31,13 @@ class ModulesController extends Controller
     }
 
     function getOptionMenu(){
-         $this->infoApp = DB::table('modulesapps')->where('id', $this->idApp)->get();
+         $this->infoApp = Modulesapp::where('id', $this->idApp)->get();
     }
 
     public function index()
     {
         $this->run();
         $datos = modulesapp::paginate(30);
-        Tools::getAllInfoTable('modulesapp');
         return view($this->slug.'.index', ['modules'=> $datos , 'infoApp' =>  $this->infoApp[0] , 'permisos'=> $this->permisos[0] ]  );
     }
 
@@ -55,7 +55,7 @@ class ModulesController extends Controller
             $datos = $request->except('_token');
             $request->validate([
                 'nameapp'=>['required', 'min:5'],
-                'urlapp'=>['required','unique:modulesapps']
+                'urlapp'=>['required','unique:ZE_modulesapps']
             ]);
             modulesapp::insert($datos);
             UserController::log("Creo el módulo {$datos['nameapp']} ",'insert');
@@ -80,7 +80,7 @@ class ModulesController extends Controller
 
         $request->validate([
             'nameapp'=>'required|min:5',
-            'urlapp'=>'required|unique:modulesapps,urlapp,'.$id
+            'urlapp'=>'required|unique:ZE_modulesapps,urlapp,'.$id
         ]);
 
         modulesapp::where('id','=',$id)->update($datos);
