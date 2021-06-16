@@ -1,7 +1,8 @@
 <?php
 
     use App\Http\Controllers\ToolsController;
-
+    use App\Http\Controllers\PerfilesController;
+    use App\Http\Controllers\EmpresasController;
 
 ?>
 <div class="row">
@@ -27,17 +28,14 @@
 
                     <div class="col-md-4 mb-3">
                         <label>Perfil</label>
-                        {{Tools::selectHTML(["model"=>'profile',
-                                "key"=>'id',
-                                "label"=>"profname",
-                                "required"=>true,
-                                "selected"=>old('profid',$modules->profid),
-                                "name"=>"profid"
-                           ])}}
+                        {{PerfilesController::selectPerfilesFrom($modules->profid)}}
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label>Empresa</label>
+<<<<<<< HEAD
+                        {{EmpresasController::selectEnterPriceFrom($empresas)}}
+=======
                             {{Tools::selectHTML(["model"=>'enterprise',
                                 "key"=>'ID_EMP',
                                 "label"=>"DESCRIPCION",
@@ -46,6 +44,7 @@
                                 "selected"=>old('empresas',$empresas),
                                 "name"=>"empresas[]"
                            ])}}
+>>>>>>> c7b464112fbfd842881da363014e38b53ef83b22
                     </div>
 
                     <div class="col-md-4 mb-3">
@@ -59,11 +58,8 @@
                         <label>Confirmar contraseña</label>
                         <input type="password" class="form-control" id="password2" name="password2" value="" {{isset($isnew) ? 'required' : ''}}  placeholder="Confirmar contraseña">
                     </div>
+                    @include('part.btn-submit',["infoApp"=>$infoApp])
 
-                    <div class="col-md-12  mb-3">
-                        <a href="/{{$infoApp->urlapp}}" class="btn btn-sm btn-danger">Cancelar</a>
-                        <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
-                    </div>
 
                 </div>
         </div>

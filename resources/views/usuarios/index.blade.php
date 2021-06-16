@@ -2,7 +2,6 @@
 
 @section('title',$infoApp->nameapp)
 
-
 @section('content')
 
         <div class="card">
@@ -36,7 +35,12 @@
                                     <td>{{$module->profname}}</td>
                                     <td>{{$module->empresas}}</td>
                                     <td>
-                                        @include('part.btnsimpleactions', ["permisos"=>$permisos , "infoApp"=>$infoApp])
+                                        @php
+                                            $edit   = true;
+                                            $delete = true;
+                                            if ($module->id == 1) $delete = false;
+                                        @endphp
+                                        @include('part.btnaction', ["permisos"=>$permisos , "edit"=>$edit, "delete"=>$delete , "logs"=>true , "infoApp"=>$infoApp])
                                     </td>
                                 </tr>
                             @endforeach
@@ -47,4 +51,5 @@
         </div>
 
 @endsection
+
 

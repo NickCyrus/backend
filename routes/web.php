@@ -10,7 +10,7 @@ use App\Http\Controllers\zonasespecialesController;
 use App\Http\Controllers\TrafosController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\logsusers;
-
+use App\Http\Controllers\DashboardController;
 
 Route::get('/login', function () {
     return view('login');
@@ -38,13 +38,19 @@ Route::group(['middleware' => 'ControlUser'], function () {
 Route::group(['middleware' => ['auth', 'ControlUser'] ], function () {
     Route::get('/', function () { return view('dashboard'); });
 
-    Route::get('dashboard', function () { return view('dashboard'); });
+
+
+    Route::get('dashboard/reloadEnterPrice/{id}', [DashboardController::class,'reloadEnterPrice']);
+    Route::get('dashboard/{id}/enterprice', [DashboardController::class,'selectenterprice']);
+
+    Route::resource('dashboard', DashboardController::class);
 
     Route::post('profile', [UserController::class,'updatepass']);
     Route::get('profile', [UserController::class,'view_profile']);
 
     Route::resource('perfiles', PerfilesController::class);
 
+    Route::get('usuarios/{id}/logs', [UsuariosController::class,'logs']);
     Route::resource('usuarios', UsuariosController::class);
 
 
@@ -60,6 +66,8 @@ Route::group(['middleware' => ['auth', 'ControlUser'] ], function () {
 
     Route::get('tools/showicons', function () { return view('tools.showIcons'); });
 
+
+    Route::get('logsusers/reloadLogsUser/{id}', [logsusers::class,'reloadLogsUser']);
     Route::resource('logsusers', logsusers::class);
 
     /*Ajax*/
