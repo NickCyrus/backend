@@ -9,6 +9,6 @@ class Config extends Model
 {
     use HasFactory;
 
-    protected $table = "ZE_configs";
+    protected $table = "ac_configs";
 
 }

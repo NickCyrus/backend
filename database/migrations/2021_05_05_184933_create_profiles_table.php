@@ -14,13 +14,13 @@ class CreateProfilesTable extends Migration
      */
     public function up()
     {
-        Schema::create('ZE_profiles', function (Blueprint $table) {
+        Schema::create('ac_profiles', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->string('profname');
         });
 
-        DB::table("ZE_profiles")->insert([
+        DB::table("ac_profiles")->insert([
             ["profname" => "Administrador", "created_at"=> Carbon::now()]
         ],true);
 
@@ -34,6 +34,6 @@ class CreateProfilesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ZE_profiles');
+        Schema::dropIfExists('ac_profiles');
     }
 }

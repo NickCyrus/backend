@@ -39,8 +39,8 @@ class logsusers extends Controller
     function index()
     {
       $this->run();
-      $datos  = LogAction::leftJoin('ZE_users','ZE_log_actions.userid','ZE_users.id')
-                ->select("ZE_log_actions.*","ZE_users.name","ZE_users.email")
+      $datos  = LogAction::leftJoin('ac_users','ac_log_actions.userid','ac_users.id')
+                ->select("ac_log_actions.*","ac_users.name","ac_users.email")
                 ->orderby('id','desc')->paginate(Tools::paginacion());
       return view($this->slug.'.index', ['logact'=> $datos , 'infoApp' =>  $this->infoApp[0] , 'permisos'=> $this->permisos[0] ]  );
     }

@@ -9,7 +9,7 @@ class enterprise_rel extends Model
 {
     use HasFactory;
 
-    protected $table = "ZE_enterprise_rels";
+    protected $table = "ac_enterprise_rels";
 
 
 }

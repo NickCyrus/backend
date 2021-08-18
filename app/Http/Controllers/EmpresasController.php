@@ -62,7 +62,7 @@ class EmpresasController extends Controller{
     public function store(Request $request){
 
             $request->validate([
-                'NIT'=>['required','unique:ZE_EMPRESA']
+                'NIT'=>['required','unique:nit']
             ]);
 
             $this->run();
@@ -79,7 +79,7 @@ class EmpresasController extends Controller{
                      ];
 
            $id    = enterprise::insertGetId($args);
-           UserController::log("Creo la ZE EMPRESA ".Tools::getInfoTableByIdField('enterprise',$id, 'DESCRIPCION')." con ID => {$id}",'update');
+           UserController::log("Creo la EMPRESA ".Tools::getInfoTableByIdField('enterprise',$id, 'DESCRIPCION')." con ID => {$id}",'update');
            return $this->index();
 
     }

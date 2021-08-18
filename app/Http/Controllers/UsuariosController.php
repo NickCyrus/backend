@@ -60,12 +60,12 @@ class UsuariosController extends Controller
     {
         $this->run();
 
-        $datos = DB::table('ZE_users')
-                        ->leftJoin('ZE_profiles','ZE_users.profid','ZE_profiles.id')
-                        ->select('ZE_users.*', 'profname',
+        $datos = DB::table('ac_users')
+                        ->leftJoin('ac_profiles','ac_users.profid','ac_profiles.id')
+                        ->select('ac_users.*', 'profname',
                          DB::raw('( CASE
-                         WHEN (SELECT COUNT(id) FROM ZE_enterprise_rels WHERE ZE_enterprise_rels.userid = ZE_users.id) = 1 THEN  (SELECT DESCRIPCION FROM ZE_enterprise_rels, ZE_EMPRESA WHERE ZE_enterprise_rels.userid = ZE_users.id AND ZE_enterprise_rels.enterpid = ZE_EMPRESA.ID_EMP )
-                         WHEN (SELECT COUNT(id) FROM ZE_enterprise_rels WHERE ZE_enterprise_rels.userid = ZE_users.id) > 1 THEN  (SELECT CONCAT(COUNT(id),\' Empresas asociadas \') FROM ZE_enterprise_rels WHERE ZE_enterprise_rels.userid = ZE_users.id)
+                         WHEN (SELECT COUNT(id) FROM ac_enterprise_rels WHERE ac_enterprise_rels.userid = ac_users.id) = 1 THEN  (SELECT rs FROM ac_enterprise_rels, ac_enterprises WHERE ac_enterprise_rels.userid = ac_users.id AND ac_enterprise_rels.enterpid = ac_enterprises.id )
+                         WHEN (SELECT COUNT(id) FROM ac_enterprise_rels WHERE ac_enterprise_rels.userid = ac_users.id) > 1 THEN  (SELECT CONCAT(COUNT(id),\' Empresas asociadas \') FROM ac_enterprise_rels WHERE ac_enterprise_rels.userid = ac_users.id)
                          ELSE \'Sin empresa\' END) AS empresas')
                  )->paginate(Tools::paginacion());
 
@@ -89,7 +89,7 @@ class UsuariosController extends Controller
 
             $request->validate([
                 'password'=>'required|min:6',
-                'email'=>'required|unique:ZE_users'
+                'email'=>'required|unique:ac_users'
             ]);
 
             $datos = $request->except('_token');
@@ -149,7 +149,7 @@ class UsuariosController extends Controller
         $this->run();
 
         $request->validate([
-            'email'=>'required|exists:ZE_users,email'
+            'email'=>'required|exists:ac_users,email'
         ]);
 
         $datos = $request->except('_token');

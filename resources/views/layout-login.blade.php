@@ -11,13 +11,16 @@
     <meta name="author" content="@yield('meta-author')"/>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Favicon icon -->
-    <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-simbol.png') }}">
     <!-- fontawesome icon -->
     <link rel="stylesheet" href="{{ asset('assets/fonts/fontawesome/css/fontawesome-all.min.css') }}">
     <!-- animation css -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/animation/css/animate.min.css') }}">
     <!-- vendor css -->
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/paleta1.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/login.css') }}">
+    
 
 </head>
 
@@ -27,7 +30,7 @@
         <!-- Required Js -->
         <script src="{{ asset('assets/js/vendor-all.min.js') }}"></script>
         <script src="{{ asset('assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
-        <script src="{{ asset('assets/js/pcoded.min.js') }}"></script>
+        <script src="{{ asset('assets/js/tilt.js') }}"></script>
         @section('addFooter') @show
  </body>
  </html>

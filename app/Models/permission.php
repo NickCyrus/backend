@@ -9,6 +9,6 @@ class permission extends Model
 {
     use HasFactory;
 
-    protected $table = "ZE_permissions";
+    protected $table = "ac_permissions";
 
 }

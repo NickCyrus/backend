@@ -14,7 +14,7 @@ class CreateConfigsTable extends Migration
      */
     public function up()
     {
-        Schema::create('ZE_configs', function (Blueprint $table) {
+        Schema::create('ac_configs', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->string('keyconf','50');
@@ -28,7 +28,7 @@ class CreateConfigsTable extends Migration
         });
 
 
-        DB::table("ZE_configs")->insert([
+        DB::table("ac_configs")->insert([
                                         ["keyconf" => "nameApp", "type" => "input", "value" => "Celsia - Sistema Gestión ZE" , "created_at"=> Carbon::now() ],
                                         ["keyconf" => "shortNameApp", "type" => "input", "value" => "Sistema Gestión ZE" , "created_at"=> Carbon::now() ],
                                         ["keyconf" => "paginacion", "type" => "input", "value" => "30" , "created_at"=> Carbon::now()] ,
@@ -45,6 +45,6 @@ class CreateConfigsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ZE_configs');
+        Schema::dropIfExists('ac_configs');
     }
 }

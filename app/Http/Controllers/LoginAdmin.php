@@ -29,11 +29,11 @@ class LoginAdmin extends Controller
 
         public function accessModule($idApp ){
             $idUser  =  Auth::User()->id;
-            $permisos = permission::join('ZE_profiles','ZE_permissions.profid','ZE_profiles.id')
-                            ->join('ZE_profpermissions','ZE_profiles.id','ZE_profpermissions.profid')
-                            ->join('ZE_modulesapps','ZE_profpermissions.modappid','ZE_modulesapps.id')
+            $permisos = permission::join('ac_profiles','ac_permissions.profid','ac_profiles.id')
+                            ->join('ac_profpermissions','ac_profiles.id','ac_profpermissions.profid')
+                            ->join('ac_modulesapps','ac_profpermissions.modappid','ac_modulesapps.id')
                             ->where('userid', $idUser )
-                            ->where('ZE_modulesapps.id', $idApp )
+                            ->where('ac_modulesapps.id', $idApp )
                             ->get();
 
             return $permisos;
@@ -41,9 +41,9 @@ class LoginAdmin extends Controller
 
         static function getModulesAccess(){
                $idUser = Auth::User()->id;
-               $modulos = permission::join('ZE_profiles','ZE_permissions.profid','ZE_profiles.id')
-                            ->join('ZE_profpermissions','ZE_profiles.id','ZE_profpermissions.profid')
-                            ->join('ZE_modulesapps','ZE_profpermissions.modappid','ZE_modulesapps.id')
+               $modulos = permission::join('ac_profiles','ac_permissions.profid','ac_profiles.id')
+                            ->join('ac_profpermissions','ac_profiles.id','ac_profpermissions.profid')
+                            ->join('ac_modulesapps','ac_profpermissions.modappid','ac_modulesapps.id')
                             ->where('userid', $idUser )
                             ->get();
               return $modulos;
@@ -52,9 +52,9 @@ class LoginAdmin extends Controller
 
         static function getModulesAccessMenu(){
             $idUser = Auth::User()->id;
-            $modulos = permission::join('ZE_profiles','ZE_permissions.profid','ZE_profiles.id')
-                         ->join('ZE_profpermissions','ZE_profiles.id','ZE_profpermissions.profid')
-                         ->join('ZE_modulesapps','ZE_profpermissions.modappid','ZE_modulesapps.id')
+            $modulos = permission::join('ac_profiles','ac_permissions.profid','ac_profiles.id')
+                         ->join('ac_profpermissions','ac_profiles.id','ac_profpermissions.profid')
+                         ->join('ac_modulesapps','ac_profpermissions.modappid','ac_modulesapps.id')
                          ->where('userid', $idUser )
                          ->where('aview', 1 )
                          ->orderBy('orderapp')

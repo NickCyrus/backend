@@ -9,6 +9,6 @@ class listopction extends Model
 {
     use HasFactory;
 
-    protected $table = "ZE_listopctions";
+    protected $table = "ac_listopctions";
 
 }

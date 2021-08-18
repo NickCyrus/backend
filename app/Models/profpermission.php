@@ -9,7 +9,7 @@ class profpermission extends Model
 {
     use HasFactory;
 
-    protected $table = "ZE_profpermissions";
+    protected $table = "ac_profpermissions";
 
 
 }

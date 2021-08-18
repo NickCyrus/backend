@@ -9,6 +9,6 @@ class Modules extends Model
 {
     use HasFactory;
 
-    protected $table = "ZE_modulesapps";
+    protected $table = "ac_modulesapps";
 
 }

@@ -14,7 +14,7 @@ class CreateListopctionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('ZE_listopctions', function (Blueprint $table) {
+        Schema::create('ac_listopctions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->integer('type');
@@ -29,6 +29,6 @@ class CreateListopctionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ZE_listopctions');
+        Schema::dropIfExists('ac_listopctions');
     }
 }

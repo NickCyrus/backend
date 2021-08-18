@@ -10,7 +10,7 @@ class CreateUsersTable extends Migration
 
     public function up()
     {
-        Schema::create('ZE_users', function (Blueprint $table) {
+        Schema::create('ac_users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
@@ -22,7 +22,7 @@ class CreateUsersTable extends Migration
         });
 
 
-        DB::table("ZE_users")->insert([
+        DB::table("ac_users")->insert([
             ["name" =>'Administrador',
              "profid"=>1,
              "email" => 'demo@demo.com',
@@ -40,6 +40,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ZE_users');
+        Schema::dropIfExists('ac_users');
     }
 }

@@ -13,7 +13,7 @@ class CreateFailedJobsTable extends Migration
      */
     public function up()
     {
-        Schema::create('ZE_failed_jobs', function (Blueprint $table) {
+        Schema::create('ac_failed_jobs', function (Blueprint $table) {
             $table->id();
             $table->string('uuid')->unique();
             $table->text('connection');
@@ -31,6 +31,6 @@ class CreateFailedJobsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ZE_failed_jobs');
+        Schema::dropIfExists('ac_failed_jobs');
     }
 }

@@ -80,7 +80,7 @@ class ModulesController extends Controller
 
         $request->validate([
             'nameapp'=>'required|min:5',
-            'urlapp'=>'required|unique:ZE_modulesapps,urlapp,'.$id
+            'urlapp'=>'required|unique:ac_modulesapps,urlapp,'.$id
         ]);
 
         modulesapp::where('id','=',$id)->update($datos);

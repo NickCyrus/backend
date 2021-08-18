@@ -9,7 +9,7 @@ class enterprise extends Model
 {
     use HasFactory;
 
-    protected $table = "ZE_EMPRESA";
-    protected $primaryKey = 'ID_EMP';
+    protected $table = "ac_enterprises";
+    // protected $primaryKey = 'ID_EMP';
     public $timestamps = false;
 }

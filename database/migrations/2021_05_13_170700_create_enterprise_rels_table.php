@@ -14,7 +14,7 @@ class CreateEnterpriseRelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('ZE_enterprise_rels', function (Blueprint $table) {
+        Schema::create('ac_enterprise_rels', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->integer('userid');
@@ -31,6 +31,6 @@ class CreateEnterpriseRelsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ZE_enterprise_rels');
+        Schema::dropIfExists('ac_enterprise_rels');
     }
 }

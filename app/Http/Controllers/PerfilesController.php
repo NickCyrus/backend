@@ -65,7 +65,7 @@ class PerfilesController extends Controller
             $datos  = $request->except('_token');
 
             $request->validate([
-                'profname'=>['required','min:5','unique:ZE_profiles']
+                'profname'=>['required','min:5','unique:ac_profiles']
             ]);
 
             $id     = profile::insertGetId( ['profname'=>$datos['profname'] , "created_at"=>Carbon::now()] );
@@ -113,8 +113,8 @@ class PerfilesController extends Controller
         $datos         = profile::find($id);
         $List_permisos = array();
 
-        $sql =  "SELECT ZE_modulesapps.* , aview  , anew , aedit , adelete   FROM ZE_modulesapps
-                 LEFT JOIN ZE_profpermissions ON ZE_modulesapps.id = ZE_profpermissions.modappid AND ZE_profpermissions.profid = {$id} ";
+        $sql =  "SELECT ac_modulesapps.* , aview  , anew , aedit , adelete   FROM ac_modulesapps
+                 LEFT JOIN ac_profpermissions ON ac_modulesapps.id = ac_profpermissions.modappid AND ac_profpermissions.profid = {$id} ";
 
         $permisos = DB::select($sql);
 
@@ -145,7 +145,7 @@ class PerfilesController extends Controller
         $datos = $request->except('_token','_method');
 
         $request->validate([
-            'profname'=>['required','min:5','unique:ZE_profiles,profname,'.$id]
+            'profname'=>['required','min:5','unique:ac_profiles,profname,'.$id]
         ]);
 
 

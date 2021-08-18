@@ -25,6 +25,8 @@
         <!-- custom -->
         <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 
+        <link rel="stylesheet" href="{{ asset('assets/css/paleta1.css') }}">
+        
         @section('addHead') @show
 
     </head>

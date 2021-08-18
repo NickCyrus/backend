@@ -14,7 +14,7 @@ class CreateModulesappsTable extends Migration
      */
     public function up()
     {
-        Schema::create('ZE_modulesapps', function (Blueprint $table) {
+        Schema::create('ac_modulesapps', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
 
@@ -25,7 +25,7 @@ class CreateModulesappsTable extends Migration
         });
 
 
-            DB::table("ZE_modulesapps")->insert([
+            DB::table("ac_modulesapps")->insert([
 
                 ["nameapp" => "Módulos",            "urlapp" => "modules",          "iconapp"=>'feather icon-grid',"orderapp"=>'1', "created_at"=> Carbon::now() ],
                 ["nameapp" => "Perfiles",           "urlapp" => "perfiles",         "iconapp"=>'feather icon-grid',"orderapp"=>'2', "created_at"=> Carbon::now() ],
@@ -44,6 +44,6 @@ class CreateModulesappsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ZE_modulesapps');
+        Schema::dropIfExists('ac_modulesapps');
     }
 }
